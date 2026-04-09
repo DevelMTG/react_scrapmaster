@@ -18,8 +18,7 @@ type MinimizeMeta = {
 
 const initialJson = {
   global: {
-    // 마지막 탭이 빠져도 tabset을 지우지 않게 하는 편이 복원에 유리함
-    tabSetEnableDeleteWhenEmpty: false,
+    tabSetEnableDeleteWhenEmpty: true,
   },
   borders: [
     {
@@ -36,32 +35,42 @@ const initialJson = {
       {
         type: "tabset",
         id: "main_tabset",
-        enableDeleteWhenEmpty: false,
+        enableDeleteWhenEmpty: true,
+        weight: 75,
+        minWidth: 250,
         children: [
           {
             type: "tab",
             id: "tab_1",
             name: "Grid",
             component: "grid",
+            enableRename: false,
+            minWidth: 250,
           },
           {
             type: "tab",
             id: "tab_2",
             name: "Chart",
             component: "chart",
+            enableRename: false,
+            minWidth: 250,
           },
         ],
       },
       {
         type: "tabset",
         id: "side_tabset",
-        enableDeleteWhenEmpty: false,
+        enableDeleteWhenEmpty: true,
+        weight: 25,
+        minWidth: 250,
         children: [
           {
             type: "tab",
             id: "tab_3",
             name: "Info",
             component: "info",
+            enableRename: false,
+            minWidth: 250,
           },
         ],
       },
@@ -171,6 +180,53 @@ export default function FlexLayoutPage() {
     );
   }, [model]);
 
+  const handleAction = useCallback(
+    (action: any) => {
+
+      console.log("Action detected:", action.type, action.data);
+
+      // FlexLayout_SelectTab: right border의 탭 클릭 => side_tabset으로 복원
+      if (action.type === "FlexLayout_SelectTab") {
+        const tabNodeId = action.data?.tabNode;
+        console.log("FlexLayout_SelectTab detected - tabNodeId:", tabNodeId);
+        
+        const tabNode = model.getNodeById(tabNodeId);
+        console.log("TabNode found:", tabNode?.getId?.());
+        
+        if (tabNode instanceof TabNode) {
+          const parent = tabNode.getParent();
+          console.log("Parent location:", parent instanceof BorderNode ? parent.getLocation().getName() : "not a border");
+          
+          if (parent instanceof BorderNode && parent.getLocation().getName() === "right") {
+            console.log("BorderNode right tab detected - attempting move to side_tabset");
+            
+            // right border의 탭을 클릭하면 side_tabset으로 이동
+            setTimeout(() => {
+              const sideTabset = model.getNodeById("side_tabset");
+              console.log("sideTabset found:", !!sideTabset);
+              
+              if (sideTabset instanceof TabSetNode) {
+                console.log("Moving node to side_tabset...");
+                model.doAction(
+                  Actions.moveNode(
+                    tabNode.getId(),
+                    sideTabset.getId(),
+                    DockLocation.CENTER,
+                    -1,
+                    true
+                  )
+                );
+              }
+            }, 0);
+          }
+        }
+      }
+
+      return action;
+    },
+    [model]
+  );
+
   const onRenderTabSet = useCallback(
     (node: TabSetNode | BorderNode, renderValues: ITabSetRenderValues) => {
       // 우측 border에는 "복원" 버튼
@@ -211,6 +267,7 @@ export default function FlexLayoutPage() {
         model={model}
         factory={factory}
         onRenderTabSet={onRenderTabSet}
+        onAction={handleAction}
       />
     </div>
   );

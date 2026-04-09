@@ -1,8 +1,9 @@
 import { Route, Routes } from "react-router";
-import FlexLayoutPage from "../features/test/FlexLayoutPage";
+import ResizablePanelsPage from "../features/test/ResizablePanelsPage";
 import KonvaPage from "../features/test/KonvaPage";
 import KonvaPageTest from "../features/test/KonvaPageTest";
 import MainPage from "../pages/MainPage";
+import ReactHTML from "../features/test/ReactHTML";
 
 
 
@@ -19,9 +20,10 @@ export default function AppRouter() {
         <Route path="/posts" element={<PostsPage />} />
       </Route> */}
       <Route path="/app" element={<MainPage />} />  
-      <Route path="/flex" element={<FlexLayoutPage />} />
+      <Route path="/resizable-panels" element={<ResizablePanelsPage />} />
       <Route path="/konva" element={<KonvaPage />} />
       <Route path="/konvaTest" element={<KonvaPageTest />} />
+      <Route path="/react-html" element={<ReactHTML />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
