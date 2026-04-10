@@ -1,0 +1,126 @@
+.left-rail {
+  width: 40px;
+  min-width: 40px;
+  height: 100vh;
+  background: #0b1020;
+  border-right: 1px solid #1c2333;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.rail-brand {
+  position: relative;
+  width: 100%;
+  height: 52px;
+  border: 0;
+  border-bottom: 1px solid #161d2b;
+  background: transparent;
+  color: #2ea8ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.rail-brand:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.rail-brand__icon {
+  width: 22px;
+  height: 22px;
+}
+
+.rail-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.rail-nav--bottom {
+  border-top: 1px solid #161d2b;
+  padding-top: 6px;
+}
+
+.rail-spacer {
+  flex: 1;
+}
+
+.rail-button {
+  position: relative;
+  width: 100%;
+  height: 48px;
+  border: 0;
+  background: transparent;
+  color: #7f8aa3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.rail-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e8edf7;
+}
+
+.rail-button.is-active {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.rail-button.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.rail-button__icon {
+  width: 19px;
+  height: 19px;
+}
+
+.rail-badge {
+  position: absolute;
+  right: 10px;
+  bottom: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.rail-badge--count {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  font-size: 10px;
+  color: #ffffff;
+  background: #0ea5e9;
+  border: 1px solid #0b1020;
+}
+
+.rail-badge--warning {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  font-size: 10px;
+  color: #111827;
+  background: #fbbf24;
+  border: 1px solid #0b1020;
+}

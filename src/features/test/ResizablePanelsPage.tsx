@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import {
   Group,
   Panel,
@@ -5,18 +6,18 @@ import {
   usePanelRef,
 } from "react-resizable-panels";
 
+import LeftRail from "./components/LeftRail";
+
 const styles = {
   app: {
     height: "100vh",
     background: "#f5f6f8",
-    padding: 12,
     boxSizing: "border-box",
   },
   panel: {
     height: "100%",
     background: "#ffffff",
     border: "1px solid #e5e7eb",
-    borderRadius: 10,
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
@@ -40,27 +41,36 @@ const styles = {
 
   // 바깥 가로 분할용 Separator
   hSeparator: {
-    width: 8,
-    margin: "0 6px",
-    borderRadius: 999,
+    width: 10,
     background: "#d1d5db",
     cursor: "col-resize",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#6b7280",
+    fontSize: 10,
+    textOrientation: "mixed",
+    writingMode: "sideways-lr",
+    letterSpacing: 5,
   },
 
   // 오른쪽 내부 세로 분할용 Separator
   vSeparator: {
-    height: 8,
-    margin: "6px 0",
-    borderRadius: 999,
+    height: 10,
     background: "#d1d5db",
     cursor: "row-resize",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#6b7280",
+    fontSize: 10,
+    letterSpacing: 5,
   },
 
   button: {
     height: 32,
     padding: "0 10px",
     border: "1px solid #d1d5db",
-    borderRadius: 8,
     background: "#fff",
     cursor: "pointer",
     fontSize: 13,
@@ -69,6 +79,25 @@ const styles = {
     margin: 0,
     paddingLeft: 18,
     lineHeight: 1.8,
+  },
+  leftRail: {
+    width: 40,
+    border: "unset",
+    padding: "10px 0",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  leftRailButton: {
+    width: 40,
+    height: 50,
+    border: "unset",
+    background: "transparent",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    fontSize: 18,
   },
   rightInnerWrap: {
     height: "100%",
@@ -81,6 +110,8 @@ export default function IdeLikeLayout() {
   const rightPanelRef = usePanelRef();
   const rightBottomPanelRef = usePanelRef();
 
+  const [activeMenu, setActiveMenu] = useState("explorer");
+  
   const toggleLeft = () => {
     const panel = leftPanelRef.current;
     if (!panel) return;
@@ -114,16 +145,92 @@ export default function IdeLikeLayout() {
     }
   };
 
+  const handleRailItemClick = (item, event) => {
+    console.log("clicked:", item.id);
+    console.log("button element:", event.currentTarget);
+
+    switch (item.id) {
+      case "explorer":
+        setActiveMenu("explorer");
+        break;
+
+      case "search":
+        setActiveMenu("search");
+        break;
+
+      case "source-control":
+        setActiveMenu("source-control");
+        break;
+
+      case "extensions":
+        setActiveMenu("extensions");
+        break;
+
+      case "notifications":
+        setActiveMenu("notifications");
+        break;
+
+      case "settings":
+        setActiveMenu("settings");
+        break;
+
+      case "account":
+        setActiveMenu("account");
+        break;
+
+      default:
+        break;
+    }
+    leftPanelRef.current?.expand();
+  };
+
   return (
     <div style={styles.app}>
       <Group orientation="horizontal" style={{ height: "100%" }}>
+          <LeftRail activeId={activeMenu} onItemClick={handleRailItemClick} />
+          {/* <aside style={styles.leftRail}>
+            <button
+              type="button"
+              style={styles.leftRailButton}
+              title="문서 목록"
+              onClick={() => leftPanelRef.current?.expand()}
+            >
+                <span style={{ fontSize: 24, lineHeight: "24px" }}>📄</span>
+            </button>
+            <button
+              type="button"
+              style={styles.leftRailButton}
+              title="검색 결과"
+              onClick={() => leftPanelRef.current?.expand()}
+            >
+                <span style={{ fontSize: 24, lineHeight: "24px" }}>🔍</span>
+            </button>
+            <button
+              type="button"
+              style={styles.leftRailButton}
+              title="최근 작업"
+              onClick={() => leftPanelRef.current?.expand()}
+            >
+                <span style={{ fontSize: 24, lineHeight: "24px" }}>🕒</span>
+            </button>
+            <button
+              type="button"
+              style={styles.leftRailButton}
+              title="즐겨찾기"
+              onClick={() => leftPanelRef.current?.expand()}
+            >
+                <span style={{ fontSize: 24, lineHeight: "24px" }}>⭐</span>
+            </button>
+          </aside> */}
+
         <Panel
           id="left"
           panelRef={leftPanelRef}
           defaultSize="280px"
-          minSize="220px"
+          minSize="180px"
+          maxSize="400px"
           collapsible
-          collapsedSize="52px"
+            collapsedSize="0px"
         >
           <section style={styles.panel}>
             <header style={styles.header}>
@@ -144,7 +251,7 @@ export default function IdeLikeLayout() {
           </section>
         </Panel>
 
-        <Separator style={styles.hSeparator} />
+        <Separator style={styles.hSeparator}>•••</Separator>
 
         <Panel id="center" minSize="420px">
           <section style={styles.panel}>
@@ -168,7 +275,7 @@ export default function IdeLikeLayout() {
           </section>
         </Panel>
 
-        <Separator style={styles.hSeparator} />
+        <Separator style={styles.hSeparator}>•••</Separator>
 
         <Panel
           id="right"
@@ -205,7 +312,7 @@ export default function IdeLikeLayout() {
                 </section>
               </Panel>
 
-              <Separator style={styles.vSeparator} />
+              <Separator style={styles.vSeparator}>•••</Separator>
 
               <Panel
                 id="right-bottom"
