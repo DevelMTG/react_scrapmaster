@@ -3,7 +3,8 @@ import {
   Code2,
   Files,
   Search,
-  GitBranch,
+  BrainCircuit,
+  ChartNoAxesCombined,
   Boxes,
   ShieldAlert,
   Bell,
@@ -26,7 +27,7 @@ function RailButton({ item, active, onItemClick }) {
     >
       <Icon className="rail-button__icon" strokeWidth={1.9} />
 
-      {item.badge?.type === "count" && (
+      {/* {item.badge?.type === "count" && (
         <span className="rail-badge rail-badge--count">
           {item.badge.value}
         </span>
@@ -34,7 +35,7 @@ function RailButton({ item, active, onItemClick }) {
 
       {item.badge?.type === "warning" && (
         <span className="rail-badge rail-badge--warning">!</span>
-      )}
+      )} */}
     </button>
   );
 }
@@ -45,19 +46,19 @@ export default function LeftRail({
 }) {
   const mainItems = useMemo(
     () => [
-      { id: "explorer", label: "탐색기", icon: Files },
+      { id: "news", label: "뉴스", icon: Files },
       { id: "search", label: "검색", icon: Search },
       {
-        id: "source-control",
-        label: "소스 관리",
-        icon: GitBranch,
-        badge: { type: "count", value: 1 },
+        id: "premium",
+        label: "프리미엄",
+        icon: ChartNoAxesCombined,
+        // badge: { type: "warning" },
       },
       {
-        id: "extensions",
-        label: "확장 기능",
-        icon: Boxes,
-        badge: { type: "warning" },
+        id: "analysis",
+        label: "분석",
+        icon: BrainCircuit,
+        //badge: { type: "count", value: 1 },
       },
       { id: "issues", label: "이슈", icon: ShieldAlert },
     ],

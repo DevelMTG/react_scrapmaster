@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router";
+import { Route, Routes, Navigate } from "react-router-dom";
 import ResizablePanelsPage from "../features/test/ResizablePanelsPage";
 import KonvaPage from "../features/test/KonvaPage";
 import KonvaPageTest from "../features/test/KonvaPageTest";
@@ -19,6 +19,7 @@ export default function AppRouter() {
         <Route path="/" element={<HomePage />} />
         <Route path="/posts" element={<PostsPage />} />
       </Route> */}
+      <Route path="/" element={<Navigate to="/resizable-panels" replace />} />  
       <Route path="/app" element={<MainPage />} />  
       <Route path="/resizable-panels" element={<ResizablePanelsPage />} />
       <Route path="/konva" element={<KonvaPage />} />
