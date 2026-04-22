@@ -104,169 +104,167 @@ const styles = {
   },
 };
 
-export default function NewsComponents() {        
+export default function NewsComponents() {
+  const leftPanelRef = usePanelRef();
+  const rightPanelRef = usePanelRef();
+  const rightBottomPanelRef = usePanelRef();
 
-    const leftPanelRef = usePanelRef();
-    const rightPanelRef = usePanelRef();
-    const rightBottomPanelRef = usePanelRef();
-
-    const toggleLeft = () => {
+  const toggleLeft = () => {
     const panel = leftPanelRef.current;
-        if (!panel) return;
+    if (!panel) return;
 
-        if (panel.isCollapsed()) {
-        panel.expand();
-        } else {
-        panel.collapse();
-        }
-    };
+    if (panel.isCollapsed()) {
+      panel.expand();
+    } else {
+      panel.collapse();
+    }
+  };
 
-    const toggleRight = () => {
-        const panel = rightPanelRef.current;
-        if (!panel) return;
+  const toggleRight = () => {
+    const panel = rightPanelRef.current;
+    if (!panel) return;
 
-        if (panel.isCollapsed()) {
-        panel.expand();
-        } else {
-        panel.collapse();
-        }
-    };
+    if (panel.isCollapsed()) {
+      panel.expand();
+    } else {
+      panel.collapse();
+    }
+  };
 
-    const toggleRightBottom = () => {
-        const panel = rightBottomPanelRef.current;
-        if (!panel) return;
+  const toggleRightBottom = () => {
+    const panel = rightBottomPanelRef.current;
+    if (!panel) return;
 
-        if (panel.isCollapsed()) {
-        panel.expand();
-        } else {
-        panel.collapse();
-        }
-    };
-    
-    return (
-        <>
+    if (panel.isCollapsed()) {
+      panel.expand();
+    } else {
+      panel.collapse();
+    }
+  };
+
+  return (
+    <>
+      <Panel
+        id="left"
+        panelRef={leftPanelRef}
+        defaultSize="280px"
+        minSize="180px"
+        maxSize="400px"
+        collapsible
+        collapsedSize="0px"
+      >
+        <section style={styles.panel}>
+          <header style={styles.header}>
+            <span>목록 패널</span>
+            <button style={styles.button} onClick={toggleLeft}>
+              좌측 토글
+            </button>
+          </header>
+
+          <div style={styles.body}>
+            <ul style={styles.list}>
+              <li>문서 목록</li>
+              <li>검색 결과</li>
+              <li>최근 작업</li>
+              <li>즐겨찾기</li>
+            </ul>
+          </div>
+        </section>
+      </Panel>
+
+      <Separator style={styles.hSeparator}>•••</Separator>
+
+      <Panel id="center" minSize="420px">
+        <section style={styles.panel}>
+          <header style={styles.header}>
+            <span>메인 작업영역</span>
+          </header>
+
+          <div style={styles.body}>
+            메뉴를 클릭하면 이 영역에 상세 화면이나 편집기가 열린다고
+            생각하시면 됩니다.
+            <br /><br />
+            예:
+            <ul style={styles.list}>
+              <li>게시물 상세</li>
+              <li>편집 화면</li>
+              <li>미리보기</li>
+              <li>탭형 콘텐츠</li>
+            </ul>
+          </div>
+        </section>
+      </Panel>
+
+      <Separator style={styles.hSeparator}>•••</Separator>
+
+      <Panel
+        id="right"
+        panelRef={rightPanelRef}
+        defaultSize="360px"
+        minSize="260px"
+        collapsible
+        collapsedSize="52px"
+      >
+        <div style={styles.rightInnerWrap}>
+          <Group orientation="vertical" style={{ height: "100%" }}>
             <Panel
-                id="left"
-                panelRef={leftPanelRef}
-                defaultSize="280px"
-                minSize="180px"
-                maxSize="400px"
-                collapsible
-                collapsedSize="0px"
+              id="right-top"
+              defaultSize="55%"
+              minSize="180px"
             >
-            <section style={styles.panel}>
+              <section style={styles.panel}>
                 <header style={styles.header}>
-                <span>목록 패널</span>
-                <button style={styles.button} onClick={toggleLeft}>
-                    좌측 토글
-                </button>
+                  <span>상단 상세 패널</span>
+                  <button style={styles.button} onClick={toggleRight}>
+                    우측 전체 토글
+                  </button>
                 </header>
 
                 <div style={styles.body}>
-                <ul style={styles.list}>
-                    <li>문서 목록</li>
-                    <li>검색 결과</li>
-                    <li>최근 작업</li>
-                    <li>즐겨찾기</li>
-                </ul>
-                </div>
-            </section>
-        
-
-            <Separator style={styles.hSeparator}>•••</Separator>
-
-            <Panel id="center" minSize="420px">
-            <section style={styles.panel}>
-                <header style={styles.header}>
-                <span>메인 작업영역</span>
-                </header>
-
-                <div style={styles.body}>
-                메뉴를 클릭하면 이 영역에 상세 화면이나 편집기가 열린다고
-                생각하시면 됩니다.
-                <br />
-                <br />
-                예:
-                <ul style={styles.list}>
-                    <li>게시물 상세</li>
-                    <li>편집 화면</li>
+                  선택한 항목의 상세정보를 여기에 배치합니다.
+                  <ul style={styles.list}>
+                    <li>기본 정보</li>
+                    <li>상태값</li>
+                    <li>태그</li>
                     <li>미리보기</li>
-                    <li>탭형 콘텐츠</li>
-                </ul>
+                  </ul>
                 </div>
-            </section>
+              </section>
             </Panel>
 
-            <Separator style={styles.hSeparator}>•••</Separator>
+            <Separator style={styles.vSeparator}>•••</Separator>
 
             <Panel
-            id="right"
-            panelRef={rightPanelRef}
-            defaultSize="360px"
-            minSize="260px"
-            collapsible
-            collapsedSize="52px"
+              id="right-bottom"
+              panelRef={rightBottomPanelRef}
+              defaultSize="45%"
+              minSize="140px"
+              collapsible
+              collapsedSize="44px"
             >
-            <div style={styles.rightInnerWrap}>
-                <Group orientation="vertical" style={{ height: "100%" }}>
-                <Panel
-                    id="right-top"
-                    defaultSize="55%"
-                    minSize="180px"
-                >
-                    <section style={styles.panel}>
-                    <header style={styles.header}>
-                        <span>상단 상세 패널</span>
-                        <button style={styles.button} onClick={toggleRight}>
-                        우측 전체 토글
-                        </button>
-                    </header>
+              <section style={styles.panel}>
+                <header style={styles.header}>
+                  <span>하단 옵션 패널</span>
+                  <button style={styles.button} onClick={toggleRightBottom}>
+                    아래 패널 토글
+                  </button>
+                </header>
 
-                    <div style={styles.body}>
-                        선택한 항목의 상세정보를 여기에 배치합니다.
-                        <ul style={styles.list}>
-                        <li>기본 정보</li>
-                        <li>상태값</li>
-                        <li>태그</li>
-                        <li>미리보기</li>
-                        </ul>
-                    </div>
-                    </section>
-                </Panel>
-
-                <Separator style={styles.vSeparator}>•••</Separator>
-
-                <Panel
-                    id="right-bottom"
-                    panelRef={rightBottomPanelRef}
-                    defaultSize="45%"
-                    minSize="140px"
-                    collapsible
-                    collapsedSize="44px"
-                >
-                    <section style={styles.panel}>
-                    <header style={styles.header}>
-                        <span>하단 옵션 패널</span>
-                        <button style={styles.button} onClick={toggleRightBottom}>
-                        아래 패널 토글
-                        </button>
-                    </header>
-
-                    <div style={styles.body}>
-                        필터, 설정, 로그, 메타정보처럼 보조 정보를 여기에 둘 수
-                        있습니다.
-                        <ul style={styles.list}>
-                        <li>필터 옵션</li>
-                        <li>권한 설정</li>
-                        <li>로그 출력</li>
-                        <li>메모 / 히스토리</li>
-                        </ul>
-                    </div>
-                    </section>
-                </Panel>
-                </Group>
-            </div>
+                <div style={styles.body}>
+                  필터, 설정, 로그, 메타정보처럼 보조 정보를 여기에 둘 수
+                  있습니다.
+                  <ul style={styles.list}>
+                    <li>필터 옵션</li>
+                    <li>권한 설정</li>
+                    <li>로그 출력</li>
+                    <li>메모 / 히스토리</li>
+                  </ul>
+                </div>
+              </section>
             </Panel>
-        </>
-    );
+          </Group>
+        </div>
+      </Panel>
+    </>
+  );
 }
