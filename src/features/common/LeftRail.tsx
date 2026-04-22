@@ -11,7 +11,7 @@ import {
   Settings,
   User,
 } from "lucide-react";
-import "./left-rail.css";
+import "../../styles/LeftRail.css";
 
 function RailButton({ item, active, onItemClick }) {
   const Icon = item.icon;
@@ -41,7 +41,7 @@ function RailButton({ item, active, onItemClick }) {
 }
 
 export default function LeftRail({
-  activeId = "explorer",
+  activeId = "news",
   onItemClick = () => {},
 }) {
   const mainItems = useMemo(

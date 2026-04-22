@@ -1,10 +1,7 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
-import {
-  Group
-} from "react-resizable-panels";
-
-import LeftRail from "../common/LeftRail";
+import { Group } from "react-resizable-panels";
+import LeftRail from "../features/common/LeftRail";
 
 const styles = {
   app: {
@@ -14,7 +11,7 @@ const styles = {
   },
 };
 
-export default function IdeLikeLayout() {
+export default function MainLayout() {
   const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState("news");
 

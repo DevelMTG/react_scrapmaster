@@ -1,16 +1,20 @@
-import {
-  Group,
+import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useScrapStore } from "../../../store/edit/useScrapStore";
+import { 
+  Trash2, 
+  PanelRightClose, 
+  Eye,
+  EyeClosed } from "lucide-react";
+// import "./styles/scrap-list-menu.css";
+import { 
+  usePanelRef,
   Panel,
   Separator,
-  usePanelRef,
+  Group,
 } from "react-resizable-panels";
 
 const styles = {
-  app: {
-    height: "100vh",
-    background: "#f5f6f8",
-    boxSizing: "border-box",
-  },
   panel: {
     height: "100%",
     background: "#ffffff",
@@ -35,7 +39,17 @@ const styles = {
     padding: 12,
     overflow: "auto",
   },
-
+  list: {
+    margin: 0,
+    paddingLeft: 18,
+    lineHeight: 1.8,
+  },
+  button: {
+    padding: "0",
+    border: "unset",
+    background: "transparent",
+    cursor: "pointer",
+  },
   // 바깥 가로 분할용 Separator
   hSeparator: {
     width: 5,
@@ -51,7 +65,6 @@ const styles = {
     writingMode: "sideways-lr",
     letterSpacing: 5,
   },
-
   // 오른쪽 내부 세로 분할용 Separator
   vSeparator: {
     height: 5,
@@ -65,60 +78,24 @@ const styles = {
     fontWeight: 700,
     letterSpacing: 5,
   },
-
-  button: {
-    height: 32,
-    padding: "0 10px",
-    border: "1px solid #d1d5db",
-    background: "#fff",
-    cursor: "pointer",
-    fontSize: 13,
-  },
-  list: {
-    margin: 0,
-    paddingLeft: 18,
-    lineHeight: 1.8,
-  },
-  leftRail: {
-    width: 40,
-    border: "unset",
-    padding: "10px 0",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  leftRailButton: {
-    width: 40,
-    height: 50,
-    border: "unset",
-    background: "transparent",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    fontSize: 18,
-  },
   rightInnerWrap: {
     height: "100%",
     minHeight: 0,
   },
 };
 
-export default function NewsComponents() {
-  const leftPanelRef = usePanelRef();
+export default function ScrapListRightSidebar() {
+  // 스크랩 목록과 제거 함수 가져오기
+  const { scraps, removeScrap } = useScrapStore(
+    useShallow((state) => ({
+      scraps: state.scraps,
+      removeScrap: state.removeScrap,
+    }))
+  );
+
   const rightPanelRef = usePanelRef();
   const rightBottomPanelRef = usePanelRef();
-
-  const toggleLeft = () => {
-    const panel = leftPanelRef.current;
-    if (!panel) return;
-
-    if (panel.isCollapsed()) {
-      panel.expand();
-    } else {
-      panel.collapse();
-    }
-  };
+  const [previewIsCollapsed, setPreviewIsCollapsed] = useState(false);
 
   const toggleRight = () => {
     const panel = rightPanelRef.current;
@@ -137,66 +114,17 @@ export default function NewsComponents() {
 
     if (panel.isCollapsed()) {
       panel.expand();
+      setPreviewIsCollapsed(false);
     } else {
       panel.collapse();
+      setPreviewIsCollapsed(true);
     }
   };
 
   return (
     <>
-      <Panel
-        id="left"
-        panelRef={leftPanelRef}
-        defaultSize="280px"
-        minSize="180px"
-        maxSize="400px"
-        collapsible
-        collapsedSize="0px"
-      >
-        <section style={styles.panel}>
-          <header style={styles.header}>
-            <span>목록 패널</span>
-            <button style={styles.button} onClick={toggleLeft}>
-              좌측 토글
-            </button>
-          </header>
-
-          <div style={styles.body}>
-            <ul style={styles.list}>
-              <li>문서 목록</li>
-              <li>검색 결과</li>
-              <li>최근 작업</li>
-              <li>즐겨찾기</li>
-            </ul>
-          </div>
-        </section>
-      </Panel>
-
       <Separator style={styles.hSeparator}>•••</Separator>
-
-      <Panel id="center" minSize="420px">
-        <section style={styles.panel}>
-          <header style={styles.header}>
-            <span>메인 작업영역</span>
-          </header>
-
-          <div style={styles.body}>
-            메뉴를 클릭하면 이 영역에 상세 화면이나 편집기가 열린다고
-            생각하시면 됩니다.
-            <br /><br />
-            예:
-            <ul style={styles.list}>
-              <li>게시물 상세</li>
-              <li>편집 화면</li>
-              <li>미리보기</li>
-              <li>탭형 콘텐츠</li>
-            </ul>
-          </div>
-        </section>
-      </Panel>
-
-      <Separator style={styles.hSeparator}>•••</Separator>
-
+      
       <Panel
         id="right"
         panelRef={rightPanelRef}
@@ -216,7 +144,7 @@ export default function NewsComponents() {
                 <header style={styles.header}>
                   <span>상단 상세 패널</span>
                   <button style={styles.button} onClick={toggleRight}>
-                    우측 전체 토글
+                    <PanelRightClose />
                   </button>
                 </header>
 
@@ -239,14 +167,18 @@ export default function NewsComponents() {
               panelRef={rightBottomPanelRef}
               defaultSize="45%"
               minSize="140px"
-              collapsible
               collapsedSize="44px"
+              collapsible
+              onResize={() => {
+                const isCollapsed = rightBottomPanelRef.current?.isCollapsed();
+                setPreviewIsCollapsed(isCollapsed ?? false);
+              }}  
             >
               <section style={styles.panel}>
                 <header style={styles.header}>
                   <span>하단 옵션 패널</span>
                   <button style={styles.button} onClick={toggleRightBottom}>
-                    아래 패널 토글
+                    {previewIsCollapsed ? <Eye /> : <EyeClosed />}
                   </button>
                 </header>
 

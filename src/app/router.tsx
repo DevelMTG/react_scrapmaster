@@ -1,10 +1,13 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
-import ResizablePanelsPage from "../features/test/ResizablePanelsPage";
 import KonvaPage from "../features/test/KonvaPage";
 import KonvaPageTest from "../features/test/KonvaPageTest";
 import MainPage from "../pages/MainPage";
 import ReactHTML from "../features/test/ReactHTML";
-import NewsComponents from "../features/test/components/NewsComponent";
+
+import MainLayout from "../layouts/MainLayout";
+import EditPage from "../pages/edit/EditPage";
+import NewsMain from "../features/edit/main/NewsMain";
+import SearchMain from "../features/edit/main/SearchMain";
 
 function NotFoundPage() {
   return <div>404 - 페이지를 찾을 수 없습니다.</div>;
@@ -21,39 +24,45 @@ const routers = createBrowserRouter([
   },
   {
     path: "/panels",
-    element: <ResizablePanelsPage />,
+    element: <MainLayout />,
     children: [
       {
         index: true,    // /panels 경로로 접근 시 기본적으로 보여줄 컴포넌트
-        element: <NewsComponents />,
+        element: <Navigate to="news" replace />,
       },
+      // 뉴스, 검색, 편집
       {
-        path: "news",
-        element: <NewsComponents />,
-      },
-      {
-        path: "search",
-        element: <NewsComponents />,
+        element: <EditPage />,
+        children: [
+          {
+            path: "news",
+            element: <NewsMain />,
+          },
+          {
+            path: "search",
+            element: <SearchMain />,
+          },
+        ],
       },
       {
         path: "premium",
-        element: <NewsComponents />,
+        //element: <NewsComponents />,
       },
       {
         path: "analysis",
-        element: <NewsComponents />,
+      //  element: <NewsComponents />,
       },
       {
         path: "notifications",
-        element: <NewsComponents />,
+        // element: <NewsComponents />,
       },
       {
         path: "settings",
-        element: <NewsComponents />,
+        // element: <NewsComponents />,
       },
       {
         path: "account",
-        element: <NewsComponents />,
+        // element: <NewsComponents />,
       },
     ],
   },
