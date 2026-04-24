@@ -99,8 +99,8 @@ export default function NewsMain() {
       <Panel
         id="left"
         panelRef={leftPanelRef}
-        defaultSize="280px"
-        minSize="180px"
+        defaultSize="300px"
+        minSize="300px"
         maxSize="400px"
         collapsible
         collapsedSize="0px"

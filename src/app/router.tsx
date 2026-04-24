@@ -1,13 +1,13 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import KonvaPage from "../features/test/KonvaPage";
-import KonvaPageTest from "../features/test/KonvaPageTest";
+import KonvaPageLine from "../features/test/KonvaPageLine";
 import MainPage from "../pages/MainPage";
-import ReactHTML from "../features/test/ReactHTML";
 
 import MainLayout from "../layouts/MainLayout";
 import EditPage from "../pages/edit/EditPage";
 import NewsMain from "../features/edit/main/NewsMain";
 import SearchMain from "../features/edit/main/SearchMain";
+import KonvaPageMerge from "../features/test/KonvaPageMerge";
 
 function NotFoundPage() {
   return <div>404 - 페이지를 찾을 수 없습니다.</div>;
@@ -71,12 +71,12 @@ const routers = createBrowserRouter([
     element: <KonvaPage />,
   },
   {
-    path: "/konvaTest",
-    element: <KonvaPageTest />,
+    path: "/konvaLine",
+    element: <KonvaPageLine />,
   },
   {
-    path: "/react-html",
-    element: <ReactHTML />,
+    path: "/konvaMerge",
+    element: <KonvaPageMerge />,
   },
   {
     path: "*",

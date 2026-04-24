@@ -30,6 +30,10 @@ export const useScrapStore = create<ScrapStore>(
   {
     name: "scrap-storage", // 세션 스토리지 키
     storage: createJSONStorage(() => sessionStorage), // 세션 스토리지 사용
+    // 원하는 데이터만 새로고침시 별도 storage에 저장하거나 복구할 수 있도록 partialize 옵션 활용
+    partialize: (state) => ({ 
+        scraps: state.scraps, 
+      }),
     onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true); // 복구 완료 시 true로 설정
     },
