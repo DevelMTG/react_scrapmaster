@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 행정포털 느낌을 위해 기본적으로 모든 버튼/입력창의 둥근 모서리 제거(선택) */
+@layer base {
+  button, input, select, textarea {
+    border-radius: 0px !important;
+  }
+}

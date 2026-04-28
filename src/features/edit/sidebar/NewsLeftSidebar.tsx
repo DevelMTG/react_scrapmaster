@@ -1,15 +1,5 @@
 import React, { useState } from "react";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Checkbox,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
-import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -76,11 +66,6 @@ const articlePages = [
   },
 ];
 
-const FONT = {
-  menu: 16,
-  item: 14,
-};
-
 const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const formatDateInput = (date) => {
@@ -145,7 +130,9 @@ const filterMediaTree = (items, keyword) => {
 };
 
 const getPageSelectionState = (page, selectedMap) => {
-  const selectedCount = page.articles.filter((article) => selectedMap[article.id]).length;
+  const selectedCount = page.articles.filter(
+    (article) => selectedMap[article.id],
+  ).length;
   if (selectedCount === 0) {
     return { checked: false, indeterminate: false };
   }
@@ -155,15 +142,11 @@ const getPageSelectionState = (page, selectedMap) => {
   return { checked: false, indeterminate: true };
 };
 
-export default function NewsLeftSidebar({
-  toggleLeft = () => {},
-}) {
+export default function NewsLeftSidebar({ toggleLeft = () => {} }) {
   const [expandedPanels, setExpandedPanels] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(
-    formatDateInput(new Date())
-  );
+  const [selectedDate, setSelectedDate] = useState(formatDateInput(new Date()));
   const [calendarMonth, setCalendarMonth] = useState(
-    parseDateInput(formatDateInput(new Date()))
+    parseDateInput(formatDateInput(new Date())),
   );
   const [mediaFilter, setMediaFilter] = useState("");
   const [selectedArticles, setSelectedArticles] = useState({});
@@ -175,7 +158,7 @@ export default function NewsLeftSidebar({
     setExpandedPanels((prev) =>
       prev.includes(panel)
         ? prev.filter((item) => item !== panel)
-        : [...prev, panel]
+        : [...prev, panel],
     );
   };
 
@@ -201,7 +184,9 @@ export default function NewsLeftSidebar({
     setSelectedDate((prev) => {
       const next = addDays(prev, diff);
       const nextDate = parseDateInput(next);
-      setCalendarMonth(new Date(nextDate.getFullYear(), nextDate.getMonth(), 1));
+      setCalendarMonth(
+        new Date(nextDate.getFullYear(), nextDate.getMonth(), 1),
+      );
       return next;
     });
   };
@@ -212,251 +197,171 @@ export default function NewsLeftSidebar({
     setCalendarMonth(new Date(date.getFullYear(), date.getMonth(), 1));
   };
 
-  const renderAccordionSummary = (label, isTopLevel) => (
-    <Typography
-      sx={{
-        fontSize: isTopLevel ? FONT.menu : FONT.item,
-        fontWeight: isTopLevel ? 700 : 400,
-      }}
-    >
-      {label}
-    </Typography>
-  );
-
   const renderMediaNodes = (items, depth = 0) => (
-    // 단위가 px 단위가 아님을 기억하자 pl:1 준다고 1px이 아니다. 1 = 8px을 의미한다. 디자인 공식의 4,8,16 단위를 차용한것 같다.
-    <Box>
+    <div className="space-y-1">
       {items.map((item) => {
         const id = `media-${item.id}`;
         const hasChildren = Boolean(item.children?.length);
+        const isOpen = expandedPanels.includes(id);
+        const paddingLeft = depth * 12;
 
         if (!hasChildren) {
           return (
-            <Box key={item.id} sx={{ pl: 1, py: 0.5 }}>
-              {renderAccordionSummary(item.label, false)}
-            </Box>
+            <div
+              key={item.id}
+              className="ml-2 border-l border-gray-200 py-1"
+              style={{ paddingLeft: paddingLeft + 12 }}
+            >
+              <span className="text-[14px] text-gray-800">{item.label}</span>
+            </div>
           );
         }
 
         return (
-          <Accordion
-            key={item.id}
-            expanded={expandedPanels.includes(id)}
-            onChange={handlePanelToggle(id)}
-            disableGutters
-            elevation={0}
-            square
-            sx={{
-              backgroundColor: "transparent",
-              "&:before": { display: "none" },
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ChevronDown size={16} />}
-              sx={{
-                px: 0,
-                minHeight: 0,
-                pl: 0,
-                flexDirection: "row-reverse",
-                "& .MuiAccordionSummary-content": {
-                  margin: "6px 0",
-                },
-                "& .MuiAccordionSummary-expandIconWrapper": {
-                  mr: 1,
-                },
+          <div key={item.id} className="ml-2 border-l border-gray-200">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={handlePanelToggle(id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  handlePanelToggle(id)();
+                }
               }}
+              className="flex cursor-pointer select-none items-center gap-2 py-1"
+              style={{ paddingLeft }}
             >
-              {renderAccordionSummary(item.label, depth === 0)}
-            </AccordionSummary>
-            <AccordionDetails sx={{ pt: 0, pb: 0.5, pl: 2 }}>
-              {renderMediaNodes(item.children, depth + 1)}
-            </AccordionDetails>
-          </Accordion>
+              <ChevronDown
+                size={16}
+                className={`transition-transform ${isOpen ? "rotate-0" : "-rotate-90"}`}
+              />
+              <span
+                className={
+                  depth === 0
+                    ? "text-[16px] font-bold text-gray-900"
+                    : "text-[14px] font-bold text-gray-900"
+                }
+              >
+                {item.label}
+              </span>
+            </div>
+            {isOpen && (
+              <div className="pl-3">
+                {renderMediaNodes(item.children, depth + 1)}
+              </div>
+            )}
+          </div>
         );
       })}
-    </Box>
-  );
-
-  const renderMediaList = (items, depth = 0) => (
-    <List dense disablePadding>
-      {items.map((item) => (
-        <Box key={item.id} sx={{ pl: depth * 2 }}>
-          <ListItem disableGutters>
-            <ListItemText
-              primary={item.label}
-              primaryTypographyProps={{ variant: "body2" }}
-            />
-          </ListItem>
-          {item.children?.length
-            ? renderMediaList(item.children, depth + 1)
-            : null}
-        </Box>
-      ))}
-    </List>
+    </div>
   );
 
   return (
-    <Box
-      component="section"
-      sx={{
-        height: "100%",
-        backgroundColor: "#ffffff",
-        border: "1px solid #e5e7eb",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Box
-        component="header"
-        sx={{
-          height: 48,
-          px: 1.5,
-          borderBottom: "1px solid #e5e7eb",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          fontWeight: 600,
-          backgroundColor: "#fafafa",
-          flexShrink: 0,
-        }}
-      >
-        <Typography variant="subtitle1">뉴스</Typography>
-        <IconButton size="small" onClick={toggleLeft}>
-          <PanelLeftClose size={18} />
-        </IconButton>
-      </Box>
-
-      <Box sx={{ flex: 1, p: 1.5, overflow: "auto" }}>
-        <Accordion
-          expanded={expandedPanels.includes("date")}
-          onChange={handlePanelToggle("date")}
-          disableGutters
-          elevation={0}
-          square
-          sx={{
-            backgroundColor: "transparent",
-            "&:before": { display: "none" },
-          }}
+    <section className="flex h-full flex-col overflow-hidden bg-white">
+      <header className="flex h-12 shrink-0 items-center justify-between border-b border-gray-200 bg-gray-50 px-3 font-semibold">
+        <span className="text-[16px]">뉴스</span>
+        <button
+          type="button"
+          onClick={toggleLeft}
+          className="rounded p-1 hover:bg-gray-100"
         >
-          <AccordionSummary
-            expandIcon={<ChevronDown size={18} />}
-            sx={{
-              px: 0,
-              minHeight: 0,
-              flexDirection: "row-reverse",
-              "& .MuiAccordionSummary-content": {
-                margin: "6px 0",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              },
-              "& .MuiAccordionSummary-expandIconWrapper": {
-                mr: 1,
-              },
+          <PanelLeftClose size={18} />
+        </button>
+      </header>
+
+      <div className="flex-1 space-y-3 overflow-auto p-3">
+        <div className="rounded border border-gray-200">
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={handlePanelToggle("date")}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handlePanelToggle("date")();
+              }
             }}
+            className="flex cursor-pointer select-none items-center justify-between px-3 py-2"
           >
-            <Typography sx={{ fontSize: FONT.menu, fontWeight: 700 }}>
-              날짜 선택
-            </Typography>
+            <div className="flex items-center gap-2">
+              <ChevronDown
+                size={18}
+                className={`transition-transform ${isDateOpen ? "rotate-0" : "-rotate-90"}`}
+              />
+              <span className="text-[16px] font-bold">날짜 선택</span>
+            </div>
             {!isDateOpen && (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                <Box
-                  component="span"
-                  role="button"
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
                   onClick={(event) => {
                     event.stopPropagation();
                     shiftSelectedDate(-1);
                   }}
-                  sx={{
-                    display: "inline-flex",
-                    p: 0.5,
-                    cursor: "pointer",
-                    color: "text.secondary",
-                  }}
+                  className="p-1 text-gray-500 hover:text-gray-800"
                 >
                   <ChevronLeft size={16} />
-                </Box>
-                <Typography sx={{ minWidth: 86, fontSize: FONT.item }}>
+                </button>
+                <span className="min-w-[86px] text-[14px] text-gray-700">
                   {selectedDate}
-                </Typography>
-                <Box
-                  component="span"
-                  role="button"
+                </span>
+                <button
+                  type="button"
                   onClick={(event) => {
                     event.stopPropagation();
                     shiftSelectedDate(1);
                   }}
-                  sx={{
-                    display: "inline-flex",
-                    p: 0.5,
-                    cursor: "pointer",
-                    color: "text.secondary",
-                  }}
+                  className="p-1 text-gray-500 hover:text-gray-800"
                 >
                   <ChevronRight size={16} />
-                </Box>
-              </Box>
+                </button>
+              </div>
             )}
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              <Typography sx={{ fontSize: 12 }} color="text.secondary">
+          </div>
+          {isDateOpen && (
+            <div className="space-y-3 border-t border-gray-200 p-3">
+              <span className="text-[12px] text-gray-500">
                 날짜를 클릭해 선택하세요.
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Box
-                  component="span"
-                  role="button"
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
                   onClick={() =>
                     setCalendarMonth(
-                      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
+                      (prev) =>
+                        new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
                     )
                   }
-                  sx={{
-                    display: "inline-flex",
-                    p: 0.5,
-                    cursor: "pointer",
-                    color: "text.secondary",
-                  }}
+                  className="p-1 text-gray-500 hover:text-gray-800"
                 >
                   <ChevronLeft size={16} />
-                </Box>
-                <Typography sx={{ fontSize: FONT.item, fontWeight: 600 }}>
-                  {calendarMonth.getFullYear()}년 {calendarMonth.getMonth() + 1}월
-                </Typography>
-                <Box
-                  component="span"
-                  role="button"
+                </button>
+                <span className="text-[14px] font-semibold text-gray-800">
+                  {calendarMonth.getFullYear()}년 {calendarMonth.getMonth() + 1}
+                  월
+                </span>
+                <button
+                  type="button"
                   onClick={() =>
                     setCalendarMonth(
-                      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
+                      (prev) =>
+                        new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
                     )
                   }
-                  sx={{
-                    display: "inline-flex",
-                    p: 0.5,
-                    cursor: "pointer",
-                    color: "text.secondary",
-                  }}
+                  className="p-1 text-gray-500 hover:text-gray-800"
                 >
                   <ChevronRight size={16} />
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(7, 1fr)",
-                  gap: 0.5,
-                }}
-              >
+                </button>
+              </div>
+              <div className="grid grid-cols-7 gap-2">
                 {WEEK_LABELS.map((label) => (
-                  <Typography
+                  <span
                     key={label}
-                    sx={{ fontSize: 12, textAlign: "center", color: "text.secondary" }}
+                    className="text-center text-[12px] text-gray-500"
                   >
                     {label}
-                  </Typography>
+                  </span>
                 ))}
                 {buildCalendarCells(calendarMonth).map((cell) => {
                   const cellKey = `${cell.date.toISOString()}-${cell.inMonth}`;
@@ -464,179 +369,165 @@ export default function NewsLeftSidebar({
                   const isSelected = cellValue === selectedDate;
 
                   return (
-                    <Box
+                    <button
                       key={cellKey}
-                      component="span"
-                      role="button"
+                      type="button"
                       onClick={() => handleDateSelect(cell.date)}
-                      sx={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        height: 32,
-                        borderRadius: 1,
-                        cursor: "pointer",
-                        fontSize: FONT.item,
-                        fontWeight: isSelected ? 700 : 400,
-                        color: cell.inMonth ? "text.primary" : "text.disabled",
-                        backgroundColor: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                        border: isSelected ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid transparent",
-                      }}
+                      className={`h-8 rounded border text-[14px] transition-colors ${
+                        isSelected
+                          ? "border-blue-300 bg-blue-50 font-bold text-blue-700"
+                          : "border-transparent hover:border-gray-200"
+                      } ${cell.inMonth ? "text-gray-800" : "text-gray-300"}`}
                     >
                       {cell.date.getDate()}
-                    </Box>
+                    </button>
                   );
                 })}
-              </Box>
-            </Box>
-          </AccordionDetails>
-        </Accordion>
+              </div>
+            </div>
+          )}
+        </div>
 
-        <Accordion
-          expanded={expandedPanels.includes("media")}
-          onChange={handlePanelToggle("media")}
-          disableGutters
-          elevation={0}
-          square
-          sx={{
-            backgroundColor: "transparent",
-            "&:before": { display: "none" },
-          }}
-        >
-          <AccordionSummary
-            expandIcon={<ChevronDown size={18} />}
-            sx={{
-              px: 0,
-              minHeight: 0,
-              flexDirection: "row-reverse",
-              "& .MuiAccordionSummary-content": { margin: "6px 0" },
-              "& .MuiAccordionSummary-expandIconWrapper": { mr: 1 },
+        <div className="rounded border border-gray-200">
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={handlePanelToggle("media")}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handlePanelToggle("media")();
+              }
             }}
+            className="flex cursor-pointer select-none items-center justify-between px-3 py-2"
           >
-            <Typography sx={{ fontSize: FONT.menu, fontWeight: 700 }}>
-              매체사 선택
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-              <TextField
-                size="small"
+            <div className="flex items-center gap-2">
+              <ChevronDown
+                size={18}
+                className={`transition-transform ${
+                  expandedPanels.includes("media") ? "rotate-0" : "-rotate-90"
+                }`}
+              />
+              <span className="text-[16px] font-bold">매체사 선택</span>
+            </div>
+          </div>
+          {expandedPanels.includes("media") && (
+            <div className="space-y-3 border-t border-gray-200 p-3">
+              <input
+                type="text"
                 placeholder="매체사 필터"
                 value={mediaFilter}
                 onChange={(event) => setMediaFilter(event.target.value)}
-                fullWidth
+                className="w-full rounded border border-gray-200 px-2 py-1 text-[14px]"
               />
               {filteredMedia.length ? (
                 renderMediaNodes(filteredMedia)
               ) : (
-                <Typography sx={{ fontSize: FONT.item }} color="text.secondary">
+                <span className="text-[14px] text-gray-500">
                   검색 결과가 없습니다.
-                </Typography>
+                </span>
               )}
-            </Box>
-          </AccordionDetails>
-        </Accordion>
+            </div>
+          )}
+        </div>
 
-        <Accordion
-          expanded={expandedPanels.includes("articles")}
-          onChange={handlePanelToggle("articles")}
-          disableGutters
-          elevation={0}
-          square
-          sx={{
-            backgroundColor: "transparent",
-            "&:before": { display: "none" },
-          }}
-        >
-          <AccordionSummary
-            expandIcon={<ChevronDown size={18} />}
-            sx={{
-              px: 0,
-              minHeight: 0,
-              flexDirection: "row-reverse",
-              "& .MuiAccordionSummary-content": { margin: "6px 0" },
-              "& .MuiAccordionSummary-expandIconWrapper": { mr: 1 },
+        <div className="rounded border border-gray-200">
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={handlePanelToggle("articles")}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handlePanelToggle("articles")();
+              }
             }}
+            className="flex cursor-pointer select-none items-center justify-between px-3 py-2"
           >
-            <Typography sx={{ fontSize: FONT.menu, fontWeight: 700 }}>
-              기사 선택
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            <div className="flex items-center gap-2">
+              <ChevronDown
+                size={18}
+                className={`transition-transform ${
+                  expandedPanels.includes("articles")
+                    ? "rotate-0"
+                    : "-rotate-90"
+                }`}
+              />
+              <span className="text-[16px] font-bold">기사 선택</span>
+            </div>
+          </div>
+          {expandedPanels.includes("articles") && (
+            <div className="space-y-3 border-t border-gray-200 p-3">
               {articlePages.map((page) => {
                 const { checked, indeterminate } = getPageSelectionState(
                   page,
-                  selectedArticles
+                  selectedArticles,
                 );
                 const pageId = `page-${page.id}`;
+                const isPageOpen = expandedPanels.includes(pageId);
 
                 return (
-                  <Accordion
-                    key={page.id}
-                    expanded={expandedPanels.includes(pageId)}
-                    onChange={handlePanelToggle(pageId)}
-                    disableGutters
-                    elevation={0}
-                    square
-                    sx={{
-                      backgroundColor: "transparent",
-                      "&:before": { display: "none" },
-                    }}
-                  >
-                    <AccordionSummary
-                      expandIcon={<ChevronDown size={16} />}
-                      sx={{
-                        px: 0,
-                        minHeight: 0,
-                        flexDirection: "row-reverse",
-                        "& .MuiAccordionSummary-content": {
-                          margin: "6px 0",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                        },
-                        "& .MuiAccordionSummary-expandIconWrapper": { mr: 1 },
+                  <div key={page.id} className="rounded border border-gray-200">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={handlePanelToggle(pageId)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          handlePanelToggle(pageId)();
+                        }
                       }}
+                      className="flex cursor-pointer select-none items-center gap-2 px-3 py-2"
                     >
-                      <Checkbox
-                        size="small"
-                        checked={checked}
-                        indeterminate={indeterminate}
-                        onChange={() => handlePageToggle(page)}
-                        sx={{ padding: 0 }}
+                      <ChevronDown
+                        size={16}
+                        className={`transition-transform ${isPageOpen ? "rotate-0" : "-rotate-90"}`}
                       />
-                      <Typography sx={{ fontSize: FONT.menu, fontWeight: 700 }}>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        ref={(node) => {
+                          if (node) {
+                            node.indeterminate = indeterminate;
+                          }
+                        }}
+                        onClick={(event) => event.stopPropagation()}
+                        onChange={(event) => {
+                          event.stopPropagation();
+                          handlePageToggle(page);
+                        }}
+                      />
+                      <span className="text-[16px] font-bold">
                         {page.title}
-                      </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails sx={{ pt: 0, pl: 4 }}>
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                      </span>
+                    </div>
+                    {isPageOpen && (
+                      <div className="space-y-2 border-t border-gray-200 px-6 py-2">
                         {page.articles.map((article) => (
-                          <Box
+                          <label
                             key={article.id}
-                            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                            className="flex items-center gap-2 border-b border-dashed border-gray-200 pb-1 last:border-b-0"
                           >
-                            <Checkbox
-                              size="small"
+                            <input
+                              type="checkbox"
                               checked={Boolean(selectedArticles[article.id])}
                               onChange={() => handleArticleToggle(article.id)}
-                              sx={{ padding: 0 }}
                             />
-                            <Typography sx={{ fontSize: FONT.item }}>
+                            <span className="text-[14px] text-gray-800">
                               {article.title}
-                            </Typography>
-                          </Box>
+                            </span>
+                          </label>
                         ))}
-                      </Box>
-                    </AccordionDetails>
-                  </Accordion>
+                      </div>
+                    )}
+                  </div>
                 );
               })}
-            </Box>
-          </AccordionDetails>
-        </Accordion>
-      </Box>
-    </Box>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
