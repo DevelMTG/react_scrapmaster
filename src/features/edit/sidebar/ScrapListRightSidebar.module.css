@@ -1,0 +1,225 @@
+/* Right Navigation Sidebar */
+.rightNav {
+  width: 50px;
+  height: 100%;
+  background-color: #3f3f3f;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border-right: 1px solid #2d2d2d;
+  gap: 4px;
+}
+
+/* 스크랩 목록열기 버튼 */
+.scrapBtn {
+  width: 100%;
+  height: 58px;
+  background-color: #2f80ed;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.scrapBtn:hover {
+  background-color: #1e5fb8;
+}
+
+.scrapBtn:active {
+  background-color: #1a4a8f;
+}
+
+.scrapIcon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.scrapText {
+  text-align: center;
+}
+
+/* 상단 도구 버튼 영역 */
+.topTools {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 0;
+  background-color: #3f3f3f;
+  flex-shrink: 0;
+}
+
+.toolBtn {
+  width: 32px;
+  height: 18px;
+  background-color: #4a4a4a;
+  border: 1px solid #555555;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b0b0b0;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.toolBtn:hover {
+  background-color: #555555;
+  color: #ffffff;
+  border-color: #666666;
+}
+
+.toolBtn:active {
+  background-color: #4a4a4a;
+}
+
+/* 탭 리스트 컨테이너 */
+.tabList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  background-color: #3f3f3f;
+  align-items: flex-end;
+}
+
+/* 개별 탭 아이템 */
+.tabItem {
+  width: 100%;
+  /* min-height: 120px; */
+  /* background-color: #3f3f3f; */
+  background-color: #7a7a7a;
+  border-left: 3px solid transparent;
+  border-right: none;
+  border-top: 1px solid #4a4a4a;
+  border-bottom: 1px solid #4a4a4a;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 8px 0 20px 0;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+/* .tabItem:hover {
+  background-color: #4a4a4a;
+} */
+
+/* 활성 탭 스타일 */
+.tabItem.active {
+  background-color: #ffffff;
+  border-left-color: #2f80ed;
+}
+
+.tabItem.active .tabTitle {
+  color: #1a1a1a;
+}
+
+.tabItem.active .tabClose {
+  opacity: 1;
+  color: #1a1a1a;
+}
+
+/* 탭 제목 (세로 텍스트) */
+.tabTitle {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-orientation: sideways;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #dddddd;
+  transition: color 0.2s ease;
+  line-height: 1.4;
+  max-width: 35px;
+  text-align: center;
+  word-break: break-word;
+  padding: 8px 2px;
+}
+
+.tabItem.active .tabTitle {
+  color: #2a2a2a;
+}
+
+/* .tabItem:hover .tabTitle {
+  color: #d0d0d0;
+} */
+
+/* 탭 닫기 버튼 */
+.tabClose {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 18px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #eeeeee;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  padding: 0;
+  /* opacity: 0; */
+}
+
+/* .tabItem:hover .tabClose {
+  opacity: 1;
+  color: #eeeeee;
+} */
+
+.tabItem.active .tabClose {
+  opacity: 1;
+  color: #666666;
+}
+
+.tabClose:hover {
+  color: #e74c3c !important;
+  transform: translateX(-50%) scale(1.15);
+}
+
+/* 스크롤 바 스타일링 */
+.tabList::-webkit-scrollbar {
+  width: 1px;
+}
+
+.tabList::-webkit-scrollbar-track {
+  background-color: #3f3f3f;
+}
+
+.tabList::-webkit-scrollbar-thumb {
+  background-color: #555555;
+  border-radius: 2px;
+}
+
+.tabList::-webkit-scrollbar-thumb:hover {
+  background-color: #666666;
+}

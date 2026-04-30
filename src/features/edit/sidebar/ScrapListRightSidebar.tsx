@@ -1,11 +1,25 @@
-import { useState } from "react";
-import { useShallow } from "zustand/react/shallow";
-import { useScrapStore } from "../../../store/edit/useScrapStore";
-import { Trash2, PanelRightClose, Eye, EyeClosed } from "lucide-react";
+import { useState, useRef } from "react";
+import {
+  Eye,
+  EyeClosed,
+  Menu,
+  Plus,
+  ChevronUp,
+  ChevronDown,
+  X,
+  CheckSquare2,
+  Minus,
+  Trash2,
+  ChevronsUp,
+  ChevronsDown,
+  FileSpreadsheet,
+} from "lucide-react";
 // import "./styles/scrap-list-menu.css";
 import { usePanelRef, Panel, Separator, Group } from "react-resizable-panels";
+import styles from "./ScrapListRightSidebar.module.css";
+import ScrapGroupResizableTable from "./ScrapGroupResizableTable";
 
-const styles = {
+const inlineStyles: Record<string, any> = {
   panel: {
     height: "100%",
     background: "#ffffff",
@@ -79,149 +93,70 @@ const styles = {
     flexDirection: "column",
   },
   bottomBar: {
-    height: 44,
+    height: 52,
     flexShrink: 0,
     marginTop: "auto",
     borderTop: "1px solid #e5e7eb",
     background: "#ffffff",
   },
-  rightNav: {
-    width: 50,
-    height: "100%",
-    background: "#3f3f3f",
-    boxSizing: "border-box",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    overflow: "hidden",
-    fontFamily: "Malgun Gothic, Arial, sans-serif",
-  },
-  scrapBtn: {
-    width: 44,
-    height: 58,
-    marginTop: 6,
-    border: 0,
-    borderRadius: 2,
-    background: "#2f80ed",
-    color: "#fff",
+  scrapSelectBtn: {
+    height: 40,
+    padding: "0 10px",
+    border: "1px solid #d1d5db",
+    background: "#fff",
     cursor: "pointer",
-    padding: "4px 0",
-    boxSizing: "border-box",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scrapIcon: {
-    fontSize: 18,
-    lineHeight: 1,
-    marginBottom: 3,
-  },
-  scrapText: {
-    fontSize: 11,
-    lineHeight: 1.15,
-    fontWeight: 600,
-    textAlign: "center",
-  },
-  topTools: {
-    width: 44,
-    marginTop: 10,
-    display: "flex",
-    flexDirection: "column",
-    gap: 6,
-    alignItems: "center",
-  },
-  toolBtn: {
-    width: 28,
-    height: 28,
-    border: "1px solid #bdbdbd",
-    borderRadius: 2,
-    background: "#f2f2f2",
-    color: "#333",
-    fontSize: 18,
-    fontWeight: 600,
-    lineHeight: 1,
-    cursor: "pointer",
-  },
-  toolBtnArrow: {
-    height: 22,
-    fontSize: 15,
-    color: "#777",
-  },
-  verticalTabs: {
-    width: 50,
-    marginTop: 8,
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "stretch",
-  },
-  tabItem: {
-    position: "relative",
-    width: 50,
-    height: 135,
-    background: "#e6e6e6",
-    borderLeft: "3px solid transparent",
-    borderBottom: "1px solid #777",
-    boxSizing: "border-box",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: 18,
-  },
-  tabItemActive: {
-    background: "#f8f8f8",
-    borderLeftColor: "#2f80ed",
-  },
-  tabTitle: {
-    writingMode: "sideways-lr",
-    textOrientation: "mixed",
-    transform: "rotate(180deg)",
-    color: "#111",
-    fontSize: 13,
-    fontWeight: 600,
+    fontSize: 12,
     whiteSpace: "nowrap",
-    letterSpacing: 0.5,
-    userSelect: "none",
-  },
-  tabClose: {
-    position: "absolute",
-    bottom: 5,
-    left: "50%",
-    transform: "translateX(-50%)",
-    border: 0,
-    background: "transparent",
-    color: "#333",
-    fontSize: 16,
-    lineHeight: 1,
-    cursor: "pointer",
-    padding: 0,
+    textOverflow: "ellipsis",
   },
 };
 
-export default function ScrapListRightSidebar() {
-  // 스크랩 목록과 제거 함수 가져오기
-  const { scraps, removeScrap } = useScrapStore(
-    useShallow((state) => ({
-      scraps: state.scraps,
-      removeScrap: state.removeScrap,
-    })),
-  );
+// 탭 데이터
+const tabsInitialData = [
+  { id: 1, label: "신문" },
+  { id: 2, label: "NEWSLETTER" },
+  { id: 3, label: "스크랩 그룹" },
+  { id: 4, label: "광고 관리" },
+  { id: 5, label: "스크랩 그룹 관리1" },
+  { id: 6, label: "스크랩 그룹 관리2" },
+  { id: 7, label: "스크랩 그룹 관리3" },
+  { id: 8, label: "스크랩 그룹 관리4214223142241" },
+];
 
+interface ToolbarButtonProps {
+  icon: React.ReactNode;
+  title?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+const ToolbarButton = ({
+  icon,
+  title,
+  onClick,
+  disabled,
+}: ToolbarButtonProps) => (
+  <button
+    type="button"
+    title={title}
+    onClick={onClick}
+    disabled={disabled}
+    className="inline-flex h-7 w-7 items-center justify-center transition-colors hover:border hover:border-blue-300 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    {icon}
+  </button>
+);
+
+const ToolbarSeparator = () => <div className="mx-0.5 h-5 w-px bg-gray-400" />;
+
+export default function ScrapListRightSidebar() {
   const rightPanelRef = usePanelRef();
   const rightBottomPanelRef = usePanelRef();
   const [previewIsCollapsed, setPreviewIsCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState(1);
+  const [tabs, setTabs] = useState(tabsInitialData);
 
-  const toggleRight = () => {
-    const panel = rightPanelRef.current;
-    if (!panel) return;
-
-    if (panel.isCollapsed()) {
-      panel.expand();
-    } else {
-      panel.collapse();
-    }
-  };
+  const rightNavRef = useRef(null);
 
   const toggleRightBottom = () => {
     const panel = rightBottomPanelRef.current;
@@ -236,107 +171,227 @@ export default function ScrapListRightSidebar() {
     }
   };
 
+  const toggleRightMenu = () => {
+    const panel = rightPanelRef.current;
+    if (!panel) return;
+
+    if (panel.isCollapsed()) {
+      panel.expand();
+      setPreviewIsCollapsed(false);
+    } else {
+      panel.collapse();
+      setPreviewIsCollapsed(true);
+    }
+  };
+
+  const handleTabSelect = (tabId: number) => {
+    setActiveTab(tabId);
+  };
+
+  const handleTabClose = (tabId: number) => {
+    const newTabs = tabs.filter((tab) => tab.id !== tabId);
+    setTabs(newTabs);
+
+    if (activeTab === tabId) {
+      if (newTabs.length > 0) {
+        setActiveTab(newTabs[0].id);
+      }
+    }
+  };
+
   return (
     <>
-      <Separator style={styles.hSeparator}>•••</Separator>
+      <Separator className="group cursor-col-resize outline-none">
+        <div className="h-full w-[5px] bg-gray-300 transition-colors group-hover:bg-blue-300 group-data-[separator=active]:bg-blue-600" />
+      </Separator>
 
       <Panel
         id="right"
         panelRef={rightPanelRef}
-        defaultSize="3 60px"
-        minSize="40px"
-        maxSize="540px"
+        defaultSize="360px"
+        minSize="50px"
+        maxSize="80%"
         collapsible
         collapsedSize="50px"
       >
         <div style={{ height: "100%", display: "flex", overflow: "hidden" }}>
-          <div id="right-nav" style={styles.rightNav}>
-            <button type="button" style={styles.scrapBtn}>
-              <span style={styles.scrapIcon}>[]</span>
-              <span style={styles.scrapText}>
+          <nav id="right-nav" className={styles.rightNav}>
+            <button
+              type="button"
+              className={styles.scrapBtn}
+              title="스크랩 목록 열기"
+              onClick={toggleRightMenu}
+            >
+              <span className={styles.scrapIcon}>
+                <Menu size={20} />
+              </span>
+              <span className={styles.scrapText}>
                 스크랩
                 <br />
                 목록열기
               </span>
             </button>
 
-            <div style={styles.topTools}>
-              <button type="button" style={styles.toolBtn}>
-                +
+            <div className={styles.topTools}>
+              <button type="button" className={styles.toolBtn} title="추가">
+                <Plus size={16} />
               </button>
               <button
                 type="button"
-                style={{ ...styles.toolBtn, ...styles.toolBtnArrow }}
+                className={styles.toolBtn}
+                title="스크랩 목록 올리기"
+                onClick={() => {
+                  const nav = rightNavRef.current;
+                  if (!nav) return;
+                  nav.scrollBy({ top: -100, behavior: "smooth" });
+                }}
               >
-                ^
+                <ChevronUp size={16} />
               </button>
             </div>
 
-            <div style={styles.verticalTabs}>
-              <div style={{ ...styles.tabItem, ...styles.tabItemActive }}>
-                <div style={styles.tabTitle}>신문</div>
-                <button type="button" style={styles.tabClose}>
-                  x
-                </button>
-              </div>
+            <ul className={styles.tabList} ref={rightNavRef}>
+              {tabs.map((tab) => (
+                <li
+                  key={tab.id}
+                  className={`${styles.tabItem} ${
+                    activeTab === tab.id ? styles.active : ""
+                  }`}
+                  onClick={() => handleTabSelect(tab.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      handleTabSelect(tab.id);
+                    }
+                  }}
+                >
+                  <span className={styles.tabTitle}>{tab.label}</span>
+                  <button
+                    type="button"
+                    className={styles.tabClose}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTabClose(tab.id);
+                    }}
+                    title="닫기"
+                    aria-label={`${tab.label} 닫기`}
+                  >
+                    <X size={14} />
+                  </button>
+                </li>
+              ))}
+            </ul>
 
-              <div style={styles.tabItem}>
-                <div style={styles.tabTitle}>NEWSLETTER [0]</div>
-                <button type="button" style={styles.tabClose}>
-                  x
-                </button>
-              </div>
-
-              <div style={styles.tabItem}>
-                <div style={styles.tabTitle}>스크랩 그룹 관리 [0]</div>
-                <button type="button" style={styles.tabClose}>
-                  x
-                </button>
-              </div>
-
-              <div style={styles.tabItem}>
-                <div style={styles.tabTitle}>스크랩 광고 관리 [0]</div>
-                <button type="button" style={styles.tabClose}>
-                  x
-                </button>
-              </div>
+            <div className={styles.topTools}>
+              <button
+                type="button"
+                className={styles.toolBtn}
+                title="스크랩 목록 내리기"
+                onClick={() => {
+                  const nav = rightNavRef.current;
+                  if (!nav) return;
+                  nav.scrollBy({ top: 100, behavior: "smooth" });
+                }}
+              >
+                <ChevronDown size={16} />
+              </button>
             </div>
-          </div>
-          <div style={styles.rightInnerWrap}>
+          </nav>
+          <div className="w-full flex-auto" style={inlineStyles.rightInnerWrap}>
             <Group orientation="vertical" style={{ height: "100%", flex: 1 }}>
               <Panel id="right-top" defaultSize="55%" minSize="180px">
-                <section style={styles.panel}>
-                  <header style={styles.header}>
-                    <span style={styles.noWrap}>상단 상세 패널</span>
+                <section style={inlineStyles.panel}>
+                  <header style={inlineStyles.header}>
+                    <span style={inlineStyles.noWrap}>스크랩 목록</span>
+                    <div className="flex"></div>
                   </header>
 
-                  <div style={{ ...styles.body, ...styles.noWrap }}>
-                    선택한 항목의 상세정보를 여기에 배치합니다.
-                    <ul style={styles.list}>
-                      <li>기본 정보</li>
-                      <li>상태값</li>
-                      <li>태그</li>
-                      <li>미리보기</li>
-                    </ul>
+                  {/* 상단 툴바 */}
+                  <div className="flex h-8 flex-shrink-0 items-center gap-0.5 border-b border-t border-gray-400 bg-gray-200 px-1">
+                    <ToolbarButton
+                      icon={<CheckSquare2 size={16} />}
+                      title="선택"
+                    />
+                    <ToolbarButton
+                      icon={<Minus size={16} />}
+                      title="체크 해제"
+                    />
+                    <ToolbarButton icon={<Trash2 size={16} />} title="삭제" />
+                    <ToolbarSeparator />
+                    <ToolbarButton
+                      icon={<ChevronsUp size={16} />}
+                      title="맨 위로"
+                    />
+                    <ToolbarButton
+                      icon={<ChevronUp size={16} />}
+                      title="위로"
+                    />
+                    <ToolbarButton
+                      icon={<ChevronDown size={16} />}
+                      title="아래로"
+                    />
+                    <ToolbarButton
+                      icon={<ChevronsDown size={16} />}
+                      title="맨 아래로"
+                    />
+                    <ToolbarSeparator />
+                    <ToolbarButton
+                      icon={<FileSpreadsheet size={16} />}
+                      title="Excel 내보내기"
+                    />
                   </div>
 
-                  <section style={styles.bottomBar}>
-                    <header style={styles.header}>
-                      <span style={styles.noWrap}>하단 옵션 패널</span>
-                      <button style={styles.button} onClick={toggleRightBottom}>
+                  <div
+                    id="right-top-body"
+                    className="h-full w-0 min-w-full flex-auto overflow-auto"
+                  >
+                    <ScrapGroupResizableTable />
+                  </div>
+
+                  <div
+                    style={inlineStyles.bottomBar}
+                    className="flex h-6 items-center justify-end px-3 py-0"
+                  >
+                    <div className="mr-auto flex items-center gap-1 text-xs text-gray-500">
+                      <button type="button" style={inlineStyles.scrapSelectBtn}>
+                        전체
+                        <br />
+                        선택
+                      </button>
+                      <button type="button" style={inlineStyles.scrapSelectBtn}>
+                        선택
+                        <br />
+                        해제
+                      </button>
+                      <button type="button" style={inlineStyles.scrapSelectBtn}>
+                        선택
+                        <br />
+                        삭제
+                      </button>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        style={inlineStyles.button}
+                        onClick={toggleRightBottom}
+                      >
                         {previewIsCollapsed ? <Eye /> : <EyeClosed />}
                       </button>
-                    </header>
-                  </section>
+                    </div>
+                  </div>
                 </section>
               </Panel>
-              <Separator style={styles.vSeparator}>•••</Separator>
+
+              <Separator className="group cursor-col-resize outline-none">
+                <div className="h-[5px] w-full bg-gray-300 transition-colors group-hover:bg-blue-300 group-data-[separator=active]:bg-blue-600" />
+              </Separator>
 
               <Panel
                 id="right-bottom"
                 panelRef={rightBottomPanelRef}
-                defaultSize="45%"
+                defaultSize="25%"
                 minSize="140px"
+                maxSize="60%"
                 collapsible
                 onResize={() => {
                   const isCollapsed =
@@ -344,17 +399,8 @@ export default function ScrapListRightSidebar() {
                   setPreviewIsCollapsed(isCollapsed ?? false);
                 }}
               >
-                <section style={styles.panel}>
-                  <div style={{ ...styles.body, ...styles.noWrap }}>
-                    필터, 설정, 로그, 메타정보처럼 보조 정보를 여기에 둘 수
-                    있습니다.
-                    <ul style={styles.list}>
-                      <li>필터 옵션</li>
-                      <li>권한 설정</li>
-                      <li>로그 출력</li>
-                      <li>메모 / 히스토리</li>
-                    </ul>
-                  </div>
+                <section style={inlineStyles.panel}>
+                  <div style={inlineStyles.body}></div>
                 </section>
               </Panel>
             </Group>

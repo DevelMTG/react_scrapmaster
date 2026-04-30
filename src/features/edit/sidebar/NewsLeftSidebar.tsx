@@ -259,7 +259,7 @@ export default function NewsLeftSidebar({ toggleLeft = () => {} }) {
 
   return (
     <section className="flex h-full flex-col overflow-hidden bg-white">
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-gray-200 bg-gray-50 px-3 font-semibold">
+      <header className="flex h-[48px] shrink-0 items-center justify-between border-b border-gray-200 bg-gray-50 px-3 font-semibold">
         <span className="text-[16px]">뉴스</span>
         <button
           type="button"
