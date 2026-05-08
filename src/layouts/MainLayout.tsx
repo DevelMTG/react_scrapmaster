@@ -3,6 +3,8 @@ import { useNavigate, Outlet } from "react-router-dom";
 import { Group } from "react-resizable-panels";
 import LeftRail from "../features/common/LeftRail";
 
+import { useTopMenuStore } from "../store/common/useTopMenuStore";
+
 const styles = {
   app: {
     height: "100vh",
@@ -13,7 +15,7 @@ const styles = {
 
 export default function MainLayout() {
   const navigate = useNavigate();
-  const [activeMenu, setActiveMenu] = useState("news");
+  const { setActiveId } = useTopMenuStore();
 
   const handleRailItemClick = (item, event) => {
     console.log("clicked:", item.id);
@@ -21,37 +23,37 @@ export default function MainLayout() {
 
     switch (item.id) {
       case "news":
-        setActiveMenu("news");
+        setActiveId("news");
         navigate("/panels/news");
         break;
 
       case "search":
-        setActiveMenu("search");
+        setActiveId("search");
         navigate("/panels/search");
         break;
 
       case "premium":
-        setActiveMenu("premium");
+        setActiveId("premium");
         navigate("/panels/premium");
         break;
 
       case "analysis":
-        setActiveMenu("analysis");
+        setActiveId("analysis");
         navigate("/panels/analysis");
         break;
 
       case "notifications":
-        setActiveMenu("notifications");
+        setActiveId("notifications");
         navigate("/panels/notifications");
         break;
 
       case "settings":
-        setActiveMenu("settings");
+        setActiveId("settings");
         navigate("/panels/settings");
         break;
 
       case "account":
-        setActiveMenu("account");
+        setActiveId("account");
         navigate("/panels/account");
         break;
 
@@ -63,7 +65,7 @@ export default function MainLayout() {
   return (
     <div style={styles.app}>
       <Group orientation="horizontal" style={{ height: "100%" }}>
-        <LeftRail activeId={activeMenu} onItemClick={handleRailItemClick} />
+        <LeftRail onItemClick={handleRailItemClick} />
         <Outlet />
       </Group>
     </div>

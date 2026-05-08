@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import "../../styles/LeftRail.css";
 
+import { useTopMenuStore } from "../../store/common/useTopMenuStore";
+
 function RailButton({ item, active, onItemClick }) {
   const Icon = item.icon;
 
@@ -40,10 +42,8 @@ function RailButton({ item, active, onItemClick }) {
   );
 }
 
-export default function LeftRail({
-  activeId = "news",
-  onItemClick = () => {},
-}) {
+export default function LeftRail({ onItemClick = () => {} }) {
+  const { activeId } = useTopMenuStore();
   const mainItems = useMemo(
     () => [
       { id: "news", label: "뉴스", icon: Files },
@@ -62,7 +62,7 @@ export default function LeftRail({
       },
       { id: "issues", label: "이슈", icon: ShieldAlert },
     ],
-    []
+    [],
   );
 
   const bottomItems = useMemo(
@@ -76,7 +76,7 @@ export default function LeftRail({
       { id: "settings", label: "설정", icon: Settings },
       { id: "account", label: "계정", icon: User },
     ],
-    []
+    [],
   );
 
   return (

@@ -215,7 +215,7 @@ export default function ScrapListRightSidebar() {
         collapsedSize="50px"
       >
         <div style={{ height: "100%", display: "flex", overflow: "hidden" }}>
-          <nav id="right-nav" className={styles.rightNav}>
+          <nav id="right-nav" className={`${styles.rightNav} select-none`}>
             <button
               type="button"
               className={styles.scrapBtn}
@@ -353,7 +353,7 @@ export default function ScrapListRightSidebar() {
                     style={inlineStyles.bottomBar}
                     className="flex h-6 items-center justify-end px-3 py-0"
                   >
-                    <div className="mr-auto flex items-center gap-1 text-xs text-gray-500">
+                    <div className="mr-auto flex select-none items-center gap-1 text-xs text-gray-500">
                       <button type="button" style={inlineStyles.scrapSelectBtn}>
                         전체
                         <br />

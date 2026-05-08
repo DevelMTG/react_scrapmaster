@@ -123,7 +123,7 @@ export default function NewsMain() {
       </Separator>
 
       <Panel id="center" minSize="420px" className="w-full">
-        <section className="flex h-full flex-col">
+        <section className="flex h-full flex-col overflow-hidden">
           <header className="flex h-[48px] shrink-0 items-center border-b bg-gray-50 font-semibold">
             <div className="flex h-full items-center border-r-2 text-xs">
               <div className="relative h-full">

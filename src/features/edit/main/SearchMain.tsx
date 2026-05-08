@@ -1,10 +1,9 @@
-import {
-  Group,
-  Panel,
-  Separator,
-  usePanelRef,
-} from "react-resizable-panels";
+import { useMemo } from "react";
+import { Group, Panel, Separator, usePanelRef } from "react-resizable-panels";
 import NewsLeftSidebar from "../sidebar/NewsLeftSidebar";
+
+import { List } from "react-window";
+import { AutoSizer } from "react-virtualized-auto-sizer";
 
 const styles = {
   panel: {
@@ -80,9 +79,26 @@ const styles = {
   },
 };
 
+const Row = ({ index, style, items, ariaAttributes }) => {
+  const item = items[index];
+
+  return (
+    <div
+      style={style}
+      {...ariaAttributes}
+      className="flex items-center border-b px-3"
+    >
+      <div>
+        <div className="font-bold">{item.title}</div>
+        <div className="text-sm text-gray-500">{item.description}</div>
+      </div>
+    </div>
+  );
+};
+
 export default function SearchMain() {
   const leftPanelRef = usePanelRef();
-  
+
   const toggleLeft = () => {
     const panel = leftPanelRef.current;
     if (!panel) return;
@@ -93,14 +109,23 @@ export default function SearchMain() {
       panel.collapse();
     }
   };
+  // 2. 가상 스크롤에 뿌릴 대량의 데이터 (예: 1만 개)
+  const items = useMemo(() => {
+    const data = Array.from({ length: 2000 }, (_, index) => ({
+      id: index + 1,
+      title: `게시글 ${index + 1}`,
+      description: `react-window 2.2.7 + AutoSizer 2.0.3 가상 스크롤 예제입니다.`,
+    }));
+    return data;
+  }, []);
 
   return (
     <>
       <Panel
         id="left"
         panelRef={leftPanelRef}
-        defaultSize="280px"
-        minSize="180px"
+        defaultSize="300px"
+        minSize="300px"
         maxSize="400px"
         collapsible
         collapsedSize="0px"
@@ -108,25 +133,30 @@ export default function SearchMain() {
         <NewsLeftSidebar toggleLeft={toggleLeft} />
       </Panel>
 
-      <Separator style={styles.hSeparator}>•••</Separator>
+      <Separator className="group cursor-col-resize outline-none">
+        <div className="h-full w-[5px] bg-gray-300 transition-colors group-hover:bg-blue-300 group-data-[separator=active]:bg-blue-600" />
+      </Separator>
 
-      <Panel id="center" minSize="420px">
-        <section style={styles.panel}>
-          <header style={styles.header}>
-            <span>메인 작업영역</span>
-          </header>
-
-          <div style={styles.body}>
-            메뉴를 클릭하면 이 영역에 상세 화면이나 편집기가 열린다고
-            생각하시면 됩니다.
-            <br /><br />
-            예:
-            <ul style={styles.list}>
-              <li>게시물 상세</li>
-              <li>편집 화면</li>
-              <li>미리보기</li>
-              <li>탭형 콘텐츠</li>
-            </ul>
+      <Panel id="center" minSize="420px" className="w-full">
+        <section className="flex h-full w-full flex-col">
+          <div style={{ flex: 1, width: "100%", overflow: "hidden" }}>
+            <AutoSizer
+              Child={({ height, width }) => {
+                return (
+                  <List
+                    style={{
+                      height,
+                      width,
+                    }}
+                    rowCount={items.length}
+                    rowHeight={62}
+                    rowComponent={Row}
+                    rowProps={{ items }}
+                    overscanCount={30}
+                  />
+                );
+              }}
+            />
           </div>
         </section>
       </Panel>

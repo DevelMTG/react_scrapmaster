@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type HTMLElementType,
+} from "react";
 import {
   Stage,
   Layer,
@@ -12,11 +18,11 @@ import {
   intersection as polygonIntersection,
 } from "polygon-clipping";
 
-function useImage(src) {
-  const [image, setImage] = useState(null);
+function useImage(src: string) {
+  const [image, setImage] = useState<HTMLImageElement | null>(null);
 
   useEffect(() => {
-    const img = new window.Image();
+    const img = new Image();
     img.src = src;
     img.onload = () => setImage(img);
   }, [src]);
@@ -24,7 +30,12 @@ function useImage(src) {
   return image;
 }
 
-function rectToPolygon(rect) {
+function rectToPolygon(rect: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}) {
   const x1 = rect.x;
   const y1 = rect.y;
   const x2 = rect.x + rect.width;
@@ -43,7 +54,7 @@ function rectToPolygon(rect) {
   ];
 }
 
-function flattenPoints(points) {
+function flattenPoints(points: number[][]) {
   return points.flatMap((p) => [p[0], p[1]]);
 }
 
@@ -58,7 +69,7 @@ export default function KonvaPageMerge() {
   const [isPanning, setIsPanning] = useState(false);
   const [stageScale, setStageScale] = useState(1);
   const [groupPos, setGroupPos] = useState({ x: 0, y: 0 });
-  const [polygons, setPolygons] = useState([]);
+  const [polygons, setPolygons] = useState<number[][][]>([]);
   const [selectionRect, setSelectionRect] = useState({
     x: 0,
     y: 0,
@@ -118,11 +129,11 @@ export default function KonvaPageMerge() {
   }, [stageSize.width]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Shift") setIsShiftPressed(true);
     };
 
-    const handleKeyUp = (e) => {
+    const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === "Shift") setIsShiftPressed(false);
     };
 
@@ -130,14 +141,14 @@ export default function KonvaPageMerge() {
       setIsShiftPressed(false);
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    window.addEventListener("blur", handleWindowBlur);
+    globalThis.addEventListener("keydown", handleKeyDown);
+    globalThis.addEventListener("keyup", handleKeyUp);
+    globalThis.addEventListener("blur", handleWindowBlur);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-      window.removeEventListener("blur", handleWindowBlur);
+      globalThis.removeEventListener("keydown", handleKeyDown);
+      globalThis.removeEventListener("keyup", handleKeyUp);
+      globalThis.removeEventListener("blur", handleWindowBlur);
     };
   }, []);
 
@@ -152,7 +163,10 @@ export default function KonvaPageMerge() {
     return transform.point(pointer);
   };
 
-  const getClampedGroupPos = (nextPos, nextScale) => {
+  const getClampedGroupPos = (
+    nextPos: { x: number; y: number },
+    nextScale: number,
+  ) => {
     if (!image) return nextPos;
 
     const scaledWidth = image.width * nextScale;
@@ -180,7 +194,7 @@ export default function KonvaPageMerge() {
     return { x: clampedX, y: clampedY };
   };
 
-  const isPointInsideImage = (point) => {
+  const isPointInsideImage = (point: { x: number; y: number }) => {
     if (!image) return false;
     return (
       point.x >= 0 &&
