@@ -10,6 +10,8 @@ import NewsMain from "../features/edit/main/NewsMain";
 import SearchMain from "../features/edit/main/SearchMain";
 import KonvaPageMerge from "../features/test/KonvaPageMerge";
 
+import PreviewExcel from "../features/test/PreviewExcel";
+import KonvaPageSelectArticle from "../features/test/KonvaPageSelectArticle";
 
 function NotFoundPage() {
   return <div>404 - 페이지를 찾을 수 없습니다.</div>;
@@ -49,7 +51,7 @@ const routers = createBrowserRouter([
     ),
     children: [
       {
-        index: true,    // /panels 경로로 접근 시 기본적으로 보여줄 컴포넌트
+        index: true, // /panels 경로로 접근 시 기본적으로 보여줄 컴포넌트
         element: <Navigate to="news" replace />,
       },
       // 뉴스, 검색, 편집
@@ -72,15 +74,15 @@ const routers = createBrowserRouter([
       },
       {
         path: "analysis",
-      //  element: <NewsComponents />,
+        //  element: <NewsComponents />,
       },
       {
         path: "notifications",
-        // element: <NewsComponents />,
+        element: <PreviewExcel />,
       },
       {
         path: "settings",
-        // element: <NewsComponents />,
+        element: <KonvaPageSelectArticle />,
       },
       {
         path: "account",
@@ -95,5 +97,3 @@ const routers = createBrowserRouter([
 ]);
 
 export default routers;
-
-

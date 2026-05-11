@@ -3,5 +3,13 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  // vite.config.ts와 함께 설정해주자, 깊은 경로 간편 설정
+  "compilerOptions": {
+    // ... 기존 설정들
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
 }
