@@ -18,6 +18,17 @@ import {
   intersection as polygonIntersection,
 } from "polygon-clipping";
 
+import { renderToStaticMarkup } from "react-dom/server";
+import {
+  Star,
+  SquareArrowOutUpRight,
+  Printer,
+  Copy,
+  Save,
+  Sparkles,
+} from "lucide-react";
+// SVG 문자열을 이미지 객체로 변환
+
 import articleDatas from "@/datas/20260511sg00.json";
 
 function useImage(src: string) {
@@ -60,6 +71,26 @@ function flattenPoints(points: number[][]) {
   return points.flatMap((p) => [p[0], p[1]]);
 }
 
+// 아이콘 SVG→Image 변환 및 캐싱
+const iconButtonDefs = [
+  { name: "star", Lucide: Star },
+  { name: "export", Lucide: SquareArrowOutUpRight },
+  { name: "print", Lucide: Printer },
+  { name: "copy", Lucide: Copy },
+  { name: "save", Lucide: Save },
+  { name: "sparkles", Lucide: Sparkles },
+];
+function svgToImage(svgString, size = 24) {
+  return new Promise((resolve) => {
+    const svg = window.btoa(svgString);
+    const img = new Image();
+    img.src = `data:image/svg+xml;base64,${svg}`;
+    img.width = size;
+    img.height = size;
+    img.onload = () => resolve(img);
+  });
+}
+
 export default function KonvaPageSelectArticle() {
   const image = useImage("../src/assets/page/세계일보_2026-05-11_001면.png");
   // 임시 데이터 정제: 좌표 문자열을 2D 숫자 배열로 변환
@@ -85,6 +116,15 @@ export default function KonvaPageSelectArticle() {
         return polygon;
       });
   }, []);
+  // Konva에 lucide 아이콘을 이미지로 변환하여 표시하기 위한 상태 및 효과
+  const [iconImages, setIconImages] = useState([]);
+  useEffect(() => {
+    Promise.all(
+      iconButtonDefs.map(({ Lucide }) =>
+        svgToImage(renderToStaticMarkup(<Lucide size={24} color="#222" />), 24),
+      ),
+    ).then(setIconImages);
+  }, []);
 
   const imageGroupRef = useRef(null);
   const dragStartRef = useRef(null);
@@ -96,6 +136,9 @@ export default function KonvaPageSelectArticle() {
   const [stageScale, setStageScale] = useState(1);
   const [groupPos, setGroupPos] = useState({ x: 0, y: 0 });
   const [polygons, setPolygons] = useState<number[][][]>([]);
+  const [hoveredArticleIndex, setHoveredArticleIndex] = useState<number | null>(
+    null,
+  );
   const [selectionRect, setSelectionRect] = useState({
     x: 0,
     y: 0,
@@ -386,13 +429,12 @@ export default function KonvaPageSelectArticle() {
 
     setStageScale(clampedScale);
     setGroupPos(getClampedGroupPos(nextPos, clampedScale));
+  };
 
-    // if (image) {
-    //   console.log('image size:', {
-    //     width: image.width * clampedScale,
-    //     height: image.height * clampedScale,
-    //   });
-    // }
+  // 아이콘 액션 핸들러 (추후 각각의 액션 구현)
+  const handleIconAction = (iconName: string, articleIndex: number) => {
+    console.log(`${iconName} clicked for article ${articleIndex}`);
+    // TODO: 각 아이콘별 액션 구현
   };
 
   return (
@@ -417,15 +459,43 @@ export default function KonvaPageSelectArticle() {
             <KonvaImage image={image} />
             {/* articles 좌표 영역 표시 */}
             {articlePolygons.map((polygon, index) => {
+              const isHovered = hoveredArticleIndex === index;
+              const [x, y] = polygon[0];
               return (
-                <Line
-                  key={`article-${index}`}
-                  points={flattenPoints(polygon)}
-                  closed
-                  fill="rgba(255, 200, 100, 0.25)"
-                  stroke="rgba(255, 140, 0, 0.8)"
-                  strokeWidth={2}
-                />
+                <Group
+                  key={`article-group-${index}`}
+                  onMouseEnter={() => setHoveredArticleIndex(index)}
+                  onMouseLeave={() => setHoveredArticleIndex(null)}
+                >
+                  <Line
+                    points={flattenPoints(polygon)}
+                    closed
+                    fill={
+                      isHovered ? "rgba(255, 200, 100, 0.25)" : "transparent"
+                    }
+                    stroke="rgba(255, 140, 0, 0.8)"
+                    strokeWidth={2}
+                    dashEnabled
+                    dash={[5, 5]}
+                  />
+                  {iconImages.length === iconButtonDefs.length &&
+                    isHovered &&
+                    iconImages.map((img, i) => (
+                      <KonvaImage
+                        key={`icon-${i}`}
+                        image={img}
+                        x={x + i * 48}
+                        y={y}
+                        width={48}
+                        height={48}
+                        listening
+                        onMouseEnter={() => setHoveredArticleIndex(index)}
+                        onClick={() =>
+                          handleIconAction(iconButtonDefs[i].name, index)
+                        }
+                      />
+                    ))}
+                </Group>
               );
             })}
             {/* 사용자 선택 폴리곤 */}
@@ -462,12 +532,12 @@ export default function KonvaPageSelectArticle() {
       <div className="absolute left-12 top-12 max-w-xs rounded bg-white/80 p-2 text-xs">
         {articles.map((article, index) => (
           <div key={index}>
-            <h3>{article.article_title}</h3>
+            {/* <h3>{article.article_title}</h3>
             <p>
               {article.coordinate
                 .map((coor) => `(${coor[0]}, ${coor[1]})`)
                 .join(", ")}
-            </p>
+            </p> */}
           </div>
         ))}
       </div>
